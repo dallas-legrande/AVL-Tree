@@ -1,4 +1,4 @@
-package lab3_binary_tree_recursive;
+package avlTree;
 /*
  * Authors: Dallas LeGrande 
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
