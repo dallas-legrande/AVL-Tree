@@ -322,18 +322,23 @@ class Tree {
         }
         
         public int getHeight(Node n){
-            if(n == null){
+            if(n == null){ 
                 return 0;
             }
-            n.height = 1;
-            if(n.leftChild ==  null && n.rightChild == null)
+            n.height = 1; // start the height at one and move up from there since it is not the bottom of the tree
+            // If the node is a leaf with no other nodes then it is the lowest height
+            if(n.leftChild ==  null && n.rightChild == null) 
             {
                 n.height = 1;
             }
+            // if there are children on the right then continue going down the tree to find the lowest node to start with
+            // add 1 to each level as you go back up the tree
             else if(n.leftChild == null && n.rightChild != null)
             {
                 n.height += getHeight(n.rightChild);
             }
+            // if there are children on the left then continue going down the tree to find the lowest node to start with
+            // add 1 to each level as you go back up the tree
             else{
                 n.height += getHeight(n.leftChild);
             }
@@ -350,8 +355,18 @@ class Tree {
             Node x = y.leftChild;
             //Node tmp = x.rightChild;
             
-            x.rightChild = y; // start rotating
-            y.leftChild = null;
+            if(x.rightChild != null)
+            {
+                y.leftChild = x.rightChild;
+                 x.rightChild = y; // start rotating
+                //y.leftChild = x;
+            }
+            else{
+                 x.rightChild = y; // start rotating
+               y.leftChild = null;
+            }
+           
+            
             
             // update height of nodes x and y
             y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
@@ -364,10 +379,19 @@ class Tree {
         public Node rotateLeft(Node x){
             Node y = x.rightChild;
 //            Node tmp = y.rightChild;
+            //x.rightChild = null; // start rotating
+            if(y.leftChild != null)
+            {
+                x.rightChild = y.leftChild;
+                y.leftChild = x;
+            }
+            else{
+                y.leftChild = x;
+                x.rightChild = null;
+            }
             
             
-            y.leftChild = x;
-            x.rightChild = null; // start rotating
+            
             
             // update height of nodes x and y
             y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
