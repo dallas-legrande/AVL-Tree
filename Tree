@@ -4,11 +4,12 @@ import java.util.Stack;
 
 
 /*
- * Authors: Dallas LeGrande 
+ * Authors: Dallas LeGrande, Selene Smith
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
- * Date: February 9, 2018
+ * Date: February 16, 2018
  * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
  * to the text file using recursion instead of iteration in the insert and delete method.
+ * The app is now a self-balancing AVL tree rather than a standard BST
  */
 class Tree {
 	private Node root;                 // first Node of Tree
@@ -62,6 +63,32 @@ class Tree {
             else{
                 current.rightChild = insert(current.rightChild, id, dd);
             }
+            // update height of ancestor
+           current.height = getMax(getHeight(current.leftChild),getHeight(current.rightChild)) + 1;
+           
+           // check the balance factor of ancestor
+           int b = getBalance(current);
+           
+           // CASES FOR UNBALANCED NODE:
+           
+           // left-left case
+           if(b > 1 && id < current.leftChild.iData){
+               return rotateRight(current);
+           }
+           // right-right case
+           if(b < -1 && id > current.rightChild.iData){
+               return rotateLeft(current);
+           }
+           // left-right case
+           if(b > 1 && id > current.leftChild.iData){
+               current.leftChild = rotateLeft(current.leftChild);
+               return rotateRight(current);
+           }
+           // right-left case
+           if(b < -1 && id < current.rightChild.iData){
+               current.rightChild = rotateRight(current.rightChild);
+               return rotateLeft(current);
+           }
             return current;
         }
 	
@@ -292,6 +319,70 @@ class Tree {
 			max = max.rightChild;		
                 }
             return max;
+        }
+        
+        public int getHeight(Node n){
+            if(n == null){
+                return 0;
+            }
+            n.height = 1;
+            if(n.leftChild ==  null && n.rightChild == null)
+            {
+                n.height = 1;
+            }
+            else if(n.leftChild == null && n.rightChild != null)
+            {
+                n.height += getHeight(n.rightChild);
+            }
+            else{
+                n.height += getHeight(n.leftChild);
+            }
+            return n.height;
+        }
+                
+        // method to get a max value
+        public int getMax(int a, int b){
+            return (a > b) ? a : b;
+        }
+        
+        // method to right rotate a subtree with root 'y'
+        public Node rotateRight(Node y){
+            Node x = y.leftChild;
+            //Node tmp = x.rightChild;
+            
+            x.rightChild = y; // start rotating
+            y.leftChild = null;
+            
+            // update height of nodes x and y
+            y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
+            x.height = getMax(getHeight(x.leftChild), getHeight(x.rightChild)) + 1;
+            
+            return x;  // new root
+        }
+        
+         // method to left rotate a subtree with root 'x'
+        public Node rotateLeft(Node x){
+            Node y = x.rightChild;
+//            Node tmp = y.rightChild;
+            
+            
+            y.leftChild = x;
+            x.rightChild = null; // start rotating
+            
+            // update height of nodes x and y
+            y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
+            x.height = getMax(getHeight(x.leftChild), getHeight(x.rightChild)) + 1;
+            
+            return y; // new root
+        }
+        
+        
+        // method to get balance factor of a node
+        public int getBalance(Node n){
+            if(n == null){
+                return 0;
+            }
+            return getHeight(n.leftChild) - getHeight(n.rightChild);
         }
 }// end class Tree
 ////////////////////////////////////////////////////////////////
