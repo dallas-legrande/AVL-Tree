@@ -14,6 +14,7 @@ public class Node {
     public Node leftChild;      // this Node's left child
     public Node rightChild;     // this Node's right child
     public int frequency = 0;   // number of times this node is used
+    public int height;
     
     public Node(int a, double b)
     {
@@ -21,6 +22,7 @@ public class Node {
         dData = b;
         leftChild = null;
         rightChild = null;
+        height = 1;
     }
     
     public void displayNode() { // display ourself
