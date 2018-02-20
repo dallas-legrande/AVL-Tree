@@ -116,6 +116,11 @@ class Tree {
                     // if the current node has a left child send that node to be checked for deletion
                     // if the node gets deleted the left child of the current node is set to the successor of the deleted node
                     current.leftChild = delete(current.leftChild, key);
+                    if(current.leftChild != null){
+                        current.leftChild = balance(current.leftChild); // Check the balance of the tree and rotate as necessary
+                        return current;
+                    }
+                    current = balance(current); // Check the balance of the tree and rotate as necessary
                     return current;
                     }
                 else {   // or go right?
@@ -127,9 +132,15 @@ class Tree {
                     // if the current node has a right child send that node to be checked for deletion
                     // if the node gets deleted the right child of the current node is set to the successor of the deleted node
                         current.rightChild = delete(current.rightChild, key);
+                        if(current.rightChild != null){
+                            current.rightChild = balance(current.rightChild); // Check the balance of the tree and rotate as necessary
                         return current;
+                        }
+                        else{
+                            current = balance(current); // Check the balance of the tree and rotate as necessary
+                            return current;
+                        }
                 }
-                
             }
 		//found the node to delete
                 
@@ -175,7 +186,9 @@ class Tree {
 
 			// connect parent of current to successor instead
 			if (current == root) {
+                                Node temp = root;
 				root = successor;
+                                root.leftChild = temp.leftChild;
 			}
 			else {
                             /*  sets the node being deleted to a temp node
@@ -189,7 +202,39 @@ class Tree {
 			}
 		} // end else two children
 		// (successor cannot have a left child)
+
 		return root;      
+        }
+        
+        //Method to balance and rotate the tree as it moves up the tree
+        private Node balance(Node current)
+        {
+            // update height of current node
+            current.height = getMax(getHeight(current.leftChild), getHeight(current.rightChild)) + 1;
+            
+            // check root's balance factor
+            int b = getBalance(current);
+            
+            // CASES FOR UNBALANCED NODE
+            // left-left case
+            if(b > 1 && getBalance(current.leftChild) >= 0){
+                return rotateRight(current);
+            }
+            // left-right case
+            if(b > 1 && getBalance(current.leftChild) < 0){
+                current.leftChild = rotateLeft(current.leftChild);
+                return rotateRight(current);
+            }
+            // right-right case
+            if(b < -1 && getBalance(current.rightChild) <= 0){
+                return rotateLeft(current);
+            }
+            // right-left case
+            if(b < -1 && getBalance(current.rightChild) > 0){
+                current.rightChild = rotateRight(current.rightChild);
+                return rotateLeft(current);
+            }
+            return current;
         }
 	//returns node with next-highest value after delNode
 	//goes right child, then right child's left descendants
@@ -358,16 +403,13 @@ class Tree {
             if(x.rightChild != null)
             {
                 y.leftChild = x.rightChild;
-                 x.rightChild = y; // start rotating
-                //y.leftChild = x;
+                x.rightChild = y; // start rotating
             }
             else{
-                 x.rightChild = y; // start rotating
-               y.leftChild = null;
+                x.rightChild = y; // start rotating
+                y.leftChild = null;
             }
-           
-            
-            
+         
             // update height of nodes x and y
             y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
             x.height = getMax(getHeight(x.leftChild), getHeight(x.rightChild)) + 1;
@@ -378,8 +420,6 @@ class Tree {
          // method to left rotate a subtree with root 'x'
         public Node rotateLeft(Node x){
             Node y = x.rightChild;
-//            Node tmp = y.rightChild;
-            //x.rightChild = null; // start rotating
             if(y.leftChild != null)
             {
                 x.rightChild = y.leftChild;
@@ -389,10 +429,7 @@ class Tree {
                 y.leftChild = x;
                 x.rightChild = null;
             }
-            
-            
-            
-            
+         
             // update height of nodes x and y
             y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
             x.height = getMax(getHeight(x.leftChild), getHeight(x.rightChild)) + 1;
