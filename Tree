@@ -116,17 +116,20 @@ class Tree {
                     // if the current node has a left child send that node to be checked for deletion
                     // if the node gets deleted the left child of the current node is set to the successor of the deleted node
                     current.leftChild = delete(current.leftChild, key);
+                    current.leftChild = balance(current);
                     return current;
                     }
                 else {   // or go right?
                     if(current.rightChild == null) // If the right child is null then the node is not in the tree
                     {
+                        balance(current);
                         return current;
                     }
                     
                     // if the current node has a right child send that node to be checked for deletion
                     // if the node gets deleted the right child of the current node is set to the successor of the deleted node
                         current.rightChild = delete(current.rightChild, key);
+                        current.rightChild = balance(current.rightChild);
                         return current;
                 }
                 
@@ -140,6 +143,7 @@ class Tree {
 		if (current.leftChild == null && current.rightChild == null) {
 			if (current == root) {              // if root,
 				root = null;        // tree is empty
+                                //balance(current);
                                 return root;
 			}
                             //if the tree is not empty and the current node does not have any children, delete the node
@@ -152,9 +156,11 @@ class Tree {
 		else if (current.rightChild == null) {  
 			if (current == root) {
 				root = current.leftChild;
+                                //balance(current);
                                 return root;
 			}
 			else {
+                                //balance(current);
                                 return current.leftChild;
 			}
 		}
@@ -163,9 +169,11 @@ class Tree {
 		else if (current.leftChild == null) {  
 			if (current == root) {
 				root = current.rightChild;
+                                //balance(current);
                                 return root;
 			}
 			else {
+                            //balance(current);
                             return current.rightChild;
 			}
 		}
@@ -185,11 +193,45 @@ class Tree {
                                 Node temp = current;
 				current = successor;
                                 current.leftChild = temp.leftChild;
+                                //balance(current);
                                 return current;
 			}
 		} // end else two children
 		// (successor cannot have a left child)
+                
+                
+                //balance(current);
 		return root;      
+        }
+        
+        private Node balance(Node current)
+        {
+            // update height of current node
+            current.height = getMax(getHeight(current.leftChild), getHeight(current.rightChild)) + 1;
+            
+            // check root's balance factor
+            int b = getBalance(current);
+            
+            // CASES FOR UNBALANCED NODE
+            // left-left case
+            if(b > 1 && getBalance(current.leftChild) >= 0){
+                return rotateRight(current);
+            }
+            // left-right case
+            if(b > 1 && getBalance(current.leftChild) < 0){
+                current.leftChild = rotateLeft(current.leftChild);
+                return rotateRight(current);
+            }
+            // right-right case
+            if(b < -1 && getBalance(current.rightChild) <= 0){
+                return rotateLeft(current);
+            }
+            // right-left case
+            if(b < -1 && getBalance(current.rightChild) > 0){
+                current.rightChild = rotateRight(current.rightChild);
+                return rotateLeft(current);
+            }
+            return current;
         }
 	//returns node with next-highest value after delNode
 	//goes right child, then right child's left descendants
@@ -358,16 +400,13 @@ class Tree {
             if(x.rightChild != null)
             {
                 y.leftChild = x.rightChild;
-                 x.rightChild = y; // start rotating
-                //y.leftChild = x;
+                x.rightChild = y; // start rotating
             }
             else{
-                 x.rightChild = y; // start rotating
-               y.leftChild = null;
+                x.rightChild = y; // start rotating
+                y.leftChild = null;
             }
-           
-            
-            
+         
             // update height of nodes x and y
             y.height = getMax(getHeight(y.leftChild), getHeight(y.rightChild)) + 1;
             x.height = getMax(getHeight(x.leftChild), getHeight(x.rightChild)) + 1;
@@ -378,8 +417,6 @@ class Tree {
          // method to left rotate a subtree with root 'x'
         public Node rotateLeft(Node x){
             Node y = x.rightChild;
-//            Node tmp = y.rightChild;
-            //x.rightChild = null; // start rotating
             if(y.leftChild != null)
             {
                 x.rightChild = y.leftChild;
