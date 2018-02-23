@@ -6,8 +6,8 @@ import java.util.Stack;
 /*
  * Authors: Dallas LeGrande, Selene Smith
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
- * Date: February 16, 2018
- * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
+ * Date: February 20, 2018
+ * Overview: This version of the TreeApp program takes input from a text file and creates an AVL tree from the data and manipulates the tree according
  * to the text file using recursion instead of iteration in the insert and delete method.
  * The app is now a self-balancing AVL tree rather than a standard BST
  */
@@ -57,11 +57,13 @@ class Tree {
             if(id < current.iData )
             {
                 current.leftChild = insert(current.leftChild, id, dd);
+                current = balance(current); // Check the balance of the tree and rotate as necessary
             }
             
             // If the id data is not less than the current node then it must be greater than the node and should therefore be the right child of the current node
             else{
                 current.rightChild = insert(current.rightChild, id, dd);
+                current = balance(current); // Check the balance of the tree and rotate as necessary
             }
             // update height of ancestor
            current.height = getMax(getHeight(current.leftChild),getHeight(current.rightChild)) + 1;
@@ -116,7 +118,7 @@ class Tree {
                     // if the current node has a left child send that node to be checked for deletion
                     // if the node gets deleted the left child of the current node is set to the successor of the deleted node
                     current.leftChild = delete(current.leftChild, key);
-                    if(current.leftChild != null){
+                    if(current.leftChild != null){ // if there is a left child start checking there
                         current.leftChild = balance(current.leftChild); // Check the balance of the tree and rotate as necessary
                         return current;
                     }
@@ -134,6 +136,7 @@ class Tree {
                         current.rightChild = delete(current.rightChild, key);
                         if(current.rightChild != null){
                             current.rightChild = balance(current.rightChild); // Check the balance of the tree and rotate as necessary
+                            current = balance(current); // Check the balance of the tree and rotate as necessary
                         return current;
                         }
                         else{
@@ -307,7 +310,7 @@ class Tree {
 
 	
 	public void displayTree() {
-		Stack<Node> globalStack = new Stack<Node>();
+		Stack<Node> globalStack = new Stack<Node>();                
 		globalStack.push(root);
 		int nBlanks = 32;
 		boolean isRowEmpty = false;
@@ -371,20 +374,28 @@ class Tree {
                 return 0;
             }
             n.height = 1; // start the height at one and move up from there since it is not the bottom of the tree
-            // If the node is a leaf with no other nodes then it is the lowest height
-            if(n.leftChild ==  null && n.rightChild == null) 
+            // If the left and right children are not null the check to see height of each child. The child that is the lower gets set to the child that is higher. Since
+            // the higher child has children that are lower than it so the height of the children need to be the same
+            if(n.leftChild !=  null && n.rightChild != null) 
             {
-                n.height = 1;
+                int rightTemp = getHeight(n.rightChild);
+                int leftTemp = getHeight(n.leftChild);
+                if(rightTemp > leftTemp){
+                    n.height += (rightTemp);
+                }
+                else{
+                    n.height += (leftTemp);
+                }   
             }
             // if there are children on the right then continue going down the tree to find the lowest node to start with
             // add 1 to each level as you go back up the tree
-            else if(n.leftChild == null && n.rightChild != null)
+            if(n.leftChild == null && n.rightChild != null)
             {
                 n.height += getHeight(n.rightChild);
             }
             // if there are children on the left then continue going down the tree to find the lowest node to start with
             // add 1 to each level as you go back up the tree
-            else{
+            else if(n.leftChild != null && n.rightChild == null){
                 n.height += getHeight(n.leftChild);
             }
             return n.height;
@@ -436,8 +447,7 @@ class Tree {
             
             return y; // new root
         }
-        
-        
+       
         // method to get balance factor of a node
         public int getBalance(Node n){
             if(n == null){
