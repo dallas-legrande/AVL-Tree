@@ -118,7 +118,7 @@ class Tree {
                     // if the current node has a left child send that node to be checked for deletion
                     // if the node gets deleted the left child of the current node is set to the successor of the deleted node
                     current.leftChild = delete(current.leftChild, key);
-                    if(current.leftChild != null){
+                    if(current.leftChild != null){ // if there is a left child start checking there
                         current.leftChild = balance(current.leftChild); // Check the balance of the tree and rotate as necessary
                         return current;
                     }
@@ -447,8 +447,7 @@ class Tree {
             
             return y; // new root
         }
-        
-        
+       
         // method to get balance factor of a node
         public int getBalance(Node n){
             if(n == null){
