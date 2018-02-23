@@ -6,8 +6,8 @@ import java.util.Stack;
 /*
  * Authors: Dallas LeGrande, Selene Smith
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
- * Date: February 20, 2018
- * Overview: This version of the TreeApp program takes input from a text file and creates an AVL tree from the data and manipulates the tree according
+ * Date: February 16, 2018
+ * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
  * to the text file using recursion instead of iteration in the insert and delete method.
  * The app is now a self-balancing AVL tree rather than a standard BST
  */
@@ -99,6 +99,7 @@ class Tree {
             {
                 return true;
             }
+            
             delete(root, key); // calls the recursive delete method and passes in the root
             return wasDeleted; // returns true or false depending on whether the node was in the tree or not
 	}// end delete()
@@ -117,7 +118,7 @@ class Tree {
                     // if the current node has a left child send that node to be checked for deletion
                     // if the node gets deleted the left child of the current node is set to the successor of the deleted node
                     current.leftChild = delete(current.leftChild, key);
-                    if(current.leftChild != null){ // if the there is a left child start checking the balance there
+                    if(current.leftChild != null){
                         current.leftChild = balance(current.leftChild); // Check the balance of the tree and rotate as necessary
                         return current;
                     }
@@ -132,15 +133,16 @@ class Tree {
                     
                     // if the current node has a right child send that node to be checked for deletion
                     // if the node gets deleted the right child of the current node is set to the successor of the deleted node
-                    current.rightChild = delete(current.rightChild, key);
-                    if(current.rightChild != null){ // if the rightChild is not null start checking the balance there
-                        current.rightChild = balance(current.rightChild); // Check the balance of the tree and rotate as necessary
+                        current.rightChild = delete(current.rightChild, key);
+                        if(current.rightChild != null){
+                            current.rightChild = balance(current.rightChild); // Check the balance of the tree and rotate as necessary
+                            current = balance(current); // Check the balance of the tree and rotate as necessary
                         return current;
-                    }
-                    else{
-                        current = balance(current); // Check the balance of the tree and rotate as necessary
-                        return current;
-                    }
+                        }
+                        else{
+                            current = balance(current); // Check the balance of the tree and rotate as necessary
+                            return current;
+                        }
                 }
             }
 		//found the node to delete
@@ -308,7 +310,7 @@ class Tree {
 
 	
 	public void displayTree() {
-		Stack<Node> globalStack = new Stack<Node>();
+		Stack<Node> globalStack = new Stack<Node>();                
 		globalStack.push(root);
 		int nBlanks = 32;
 		boolean isRowEmpty = false;
