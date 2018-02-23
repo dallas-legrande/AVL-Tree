@@ -2,7 +2,7 @@ package avlTree;
 /*
  * Authors: Dallas LeGrande, Selene Smith
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
- * Date: February 16, 2018
+ * Date: February 20, 2018
  * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
  * to the text file using recursion instead of iteration in the insert and delete method.
  * The app is now a self-balancing AVL tree rather than a standard BST
@@ -75,7 +75,14 @@ class TreeApp {
                             case "find":
                                 System.out.println();
                                 Node found = theTree.find(Integer.parseInt(words [1]));
-                                System.out.println("Found: {" + found.iData + ", " + found.dData + "}");   
+                                if(found == null)
+                                {
+                                    Node empty = new Node((Integer.parseInt(words [1])), (Integer.parseInt(words [1])+.9));
+                                    System.out.println(empty.iData + " is not in the tree"); 
+                                }
+                                else{
+                                    System.out.println("Found: {" + found.iData + ", " + found.dData + "}");   
+                                }
                                 break;
 
                             //if the first word in the array is "delete" then it looks for the next string, parses it to an int and
