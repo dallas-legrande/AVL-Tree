@@ -120,6 +120,7 @@ class Tree {
                     current.leftChild = delete(current.leftChild, key);
                     if(current.leftChild != null){ // if there is a left child start checking there
                         current.leftChild = balance(current.leftChild); // Check the balance of the tree and rotate as necessary
+			current = balance(current); // Check the balance of the tree and rotate as necessary
                         return current;
                     }
                     current = balance(current); // Check the balance of the tree and rotate as necessary
